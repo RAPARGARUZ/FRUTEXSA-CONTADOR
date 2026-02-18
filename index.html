@@ -84,7 +84,9 @@ async function connect(){
   acceptAllDevices: true,
   optionalServices: [SERVICE_UUID]
 });
- async function resetContador() {
+async function resetContador() {
+
+    console.log("Enviando RESET");
 
     try {
         await characteristicAuth.writeValue(
@@ -94,6 +96,7 @@ async function connect(){
         alert("Error enviando reset: " + error);
     }
 }
+
 
 
         const server = await device.gatt.connect();
