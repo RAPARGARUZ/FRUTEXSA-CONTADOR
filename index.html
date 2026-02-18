@@ -79,23 +79,32 @@ characteristicCounter.addEventListener(
   }
 );
 
-    await characteristicAuth.writeValue(new TextEncoder().encode(nivel));
+    a// Activar notificaciones primero
+await characteristicAuth.startNotifications();
 
-    characteristicAuth.startNotifications();
-    characteristicAuth.addEventListener('characteristicvaluechanged', event => {
-        const response = new TextDecoder().decode(event.target.value);
+characteristicAuth.addEventListener(
+  'characteristicvaluechanged',
+  event => {
+    const response = new TextDecoder().decode(event.target.value);
 
-        if(response === "SUPERVISOR_OK"){
-            document.getElementById("resetBtn").style.display = "inline-block";
-            alert("Acceso Supervisor");
-        }
-        else if(response === "OPERADOR_OK"){
-            alert("Acceso Operador");
-        }
-        else{
-            alert("Acceso Denegado");
-        }
-    });
+    if(response === "SUPERVISOR_OK"){
+        document.getElementById("resetBtn").style.display = "inline-block";
+        alert("Acceso Supervisor");
+    }
+    else if(response === "OPERADOR_OK"){
+        alert("Acceso Operador");
+    }
+    else{
+        alert("Acceso Denegado");
+    }
+  }
+);
+
+// Luego enviar contraseña
+await characteristicAuth.writeValue(
+  new TextEncoder().encode(nivel)
+);
+
 
     characteristicCounter.startNotifications();
     characteristicCounter.addEventListener('characteristicvaluechanged', event => {
