@@ -68,6 +68,16 @@ async function connect(){
 
     characteristicCounter = await service.getCharacteristic(CHAR_COUNTER_UUID);
     characteristicAuth = await service.getCharacteristic(CHAR_AUTH_UUID);
+    // 👇 ACTIVAR NOTIFICACIONES DEL CONTADOR
+await characteristicCounter.startNotifications();
+
+characteristicCounter.addEventListener(
+  'characteristicvaluechanged',
+  event => {
+    const value = new TextDecoder().decode(event.target.value);
+    document.getElementById("contador").innerText = value;
+  }
+);
 
     await characteristicAuth.writeValue(new TextEncoder().encode(nivel));
 
