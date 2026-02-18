@@ -24,7 +24,7 @@ button {
 
 <body>
 
-<h2>FRUTEXSA - COTADOR</h2>
+<h2>FRUTEXSA - CONTADOR</h2>
 <h3 id="machine"></h3>
 
 <input type="password" id="password" placeholder="Ingrese contraseña">
@@ -58,9 +58,9 @@ function login(){
 async function connect(){
 
     const device = await navigator.bluetooth.requestDevice({
-        filters: [{ name: "CONTADOR_" + machineID }],
-        optionalServices: [SERVICE_UUID]
-    });
+  acceptAllDevices: true,
+  optionalServices: [SERVICE_UUID]
+});
 
     const server = await device.gatt.connect();
     const service = await server.getPrimaryService(SERVICE_UUID);
