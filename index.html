@@ -97,6 +97,18 @@ async function resetContador() {
     }
 }
 
+async function resetContador() {
+
+    console.log("Enviando RESET");
+
+    try {
+        await characteristicAuth.writeValue(
+            new TextEncoder().encode("RESET")
+        );
+    } catch(error) {
+        alert("Error enviando reset: " + error);
+    }
+}
 
 
         const server = await device.gatt.connect();
