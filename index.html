@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Serviplant - Contador Máquina</title>
+<style>
+body {
+    font-family: Arial;
+    background-color: #111;
+    color: #fff;
+    text-align: center;
+}
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 18px;
+}
+#contador {
+    font-size: 60px;
+    margin-top: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Serviplant - Contador</h2>
+<h3 id="machine"></h3>
+
+<input type="password" id="password" placeholder="Ingrese contraseña">
+<br>
+<button onclick="login()">Ingresar</button>
+
+<div id="panel" style="display:none;">
+    <button onclick="connect()">Conectar</button>
+    <div id="contador">0</div>
+    <button id="resetBtn" style="display:none;" onclick="resetContador()">RESET</button>
+</div>
+
+<script>
+
+const SERVICE_UUID = "12345678-1234-1234-1234-1234567890ab";
+const CHAR_COUNTER_UUID = "abcd1234-5678-1234-5678-abcdef123456";
+const CHAR_AUTH_UUID = "auth1234-5678-1234-5678-abcdef123456";
+
+let characteristicCounter;
+let characteristicAuth;
+let machineID = new URLSearchParams(window.location.search).get("id");
+document.getElementById("machine").innerText = "Máquina: " + machineID;
+
+let nivel = "";
+
+function login(){
+    nivel = document.getElementById("password").value;
+    document.getElementById("panel").style.display = "block";
+}
+
+async function connect(){
+
+    const device = await navigator.bluetooth.requestDevice({
+        filters: [{ name: "CONTADOR_" + machineID }],
+        optionalServices: [SERVICE_UUID]
+    });
+
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService(SERVICE_UUID);
+
+    characteristicCounter = await service.getCharacteristic(CHAR_COUNTER_UUID);
+    characteristicAuth = await service.getCharacteristic(CHAR_AUTH_UUID);
+
+    await characteristicAuth.writeValue(new TextEncoder().encode(nivel));
+
+    characteristicAuth.startNotifications();
+    characteristicAuth.addEventListener('characteristicvaluechanged', event => {
+        const response = new TextDecoder().decode(event.target.value);
+
+        if(response === "SUPERVISOR_OK"){
+            document.getElementById("resetBtn").style.display = "inline-block";
+            alert("Acceso Supervisor");
+        }
+        else if(response === "OPERADOR_OK"){
+            alert("Acceso Operador");
+        }
+        else{
+            alert("Acceso Denegado");
+        }
+    });
+
+    characteristicCounter.startNotifications();
+    characteristicCounter.addEventListener('characteristicvaluechanged', event => {
+        const value = new TextDecoder().decode(event.target.value);
+        document.getElementById("contador").innerText = value;
+    });
+}
+
+function resetContador(){
+    alert("Presione botón físico RESET en la máquina");
+}
+
+</script>
+
+</body>
+</html>
