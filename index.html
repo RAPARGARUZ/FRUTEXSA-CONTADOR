@@ -59,14 +59,7 @@ let characteristicCounter;
 let characteristicAuth;
 let nivel = "";
 
-let machineID = new URLSearchParams(window.location.search).get("id");
-
-if(machineID){
-    document.getElementById("machine").innerText = "Máquina: " + machineID;
-} else {
-    alert("No se especificó ID de máquina en la URL");
-}
-
+// -------- LOGIN --------
 function login(){
     nivel = document.getElementById("password").value;
     if(nivel.length === 0){
@@ -76,14 +69,15 @@ function login(){
     document.getElementById("panel").style.display = "block";
 }
 
+// -------- CONECTAR --------
 async function connect(){
 
     try {
 
         const device = await navigator.bluetooth.requestDevice({
-  acceptAllDevices: true,
-  optionalServices: [SERVICE_UUID]
-});
+            acceptAllDevices: true,
+            optionalServices: [SERVICE_UUID]
+        });
 
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
@@ -122,7 +116,6 @@ async function connect(){
             }
         );
 
-        // Enviar contraseña después de activar notificaciones
         await characteristicAuth.writeValue(
             new TextEncoder().encode(nivel)
         );
@@ -133,8 +126,8 @@ async function connect(){
         alert("Error: " + error);
     }
 }
-        
 
+// -------- RESET --------
 async function resetContador() {
 
     console.log("Enviando RESET");
@@ -147,6 +140,7 @@ async function resetContador() {
         alert("Error enviando reset: " + error);
     }
 }
+
 
 </script>
 
