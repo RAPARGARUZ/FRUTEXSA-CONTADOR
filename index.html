@@ -44,7 +44,9 @@ input {
     <button onclick="connect()">Conectar</button>
     <div id="estado">Desconectado</div>
     <div id="contador">0</div>
-    <button id="resetBtn" style="display:none;">RESET</button>
+    <button id="resetBtn" style="display:none;" onclick="resetContador()">RESET</button>
+    
+
 </div>
 
 <script>
@@ -82,6 +84,17 @@ async function connect(){
   acceptAllDevices: true,
   optionalServices: [SERVICE_UUID]
 });
+ async function resetContador() {
+
+    try {
+        await characteristicAuth.writeValue(
+            new TextEncoder().encode("RESET")
+        );
+    } catch(error) {
+        alert("Error enviando reset: " + error);
+    }
+}
+
 
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
