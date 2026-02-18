@@ -84,32 +84,6 @@ async function connect(){
   acceptAllDevices: true,
   optionalServices: [SERVICE_UUID]
 });
-async function resetContador() {
-
-    console.log("Enviando RESET");
-
-    try {
-        await characteristicAuth.writeValue(
-            new TextEncoder().encode("RESET")
-        );
-    } catch(error) {
-        alert("Error enviando reset: " + error);
-    }
-}
-
-async function resetContador() {
-
-    console.log("Enviando RESET");
-
-    try {
-        await characteristicAuth.writeValue(
-            new TextEncoder().encode("RESET")
-        );
-    } catch(error) {
-        alert("Error enviando reset: " + error);
-    }
-}
-
 
         const server = await device.gatt.connect();
         const service = await server.getPrimaryService(SERVICE_UUID);
@@ -157,6 +131,20 @@ async function resetContador() {
 
     } catch(error) {
         alert("Error: " + error);
+    }
+}
+        }
+
+async function resetContador() {
+
+    console.log("Enviando RESET");
+
+    try {
+        await characteristicAuth.writeValue(
+            new TextEncoder().encode("RESET")
+        );
+    } catch(error) {
+        alert("Error enviando reset: " + error);
     }
 }
 
