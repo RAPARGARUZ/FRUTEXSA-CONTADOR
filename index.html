@@ -52,6 +52,8 @@ input {
     <div>Total Histórico: <span id="contadorTotal">0</span></div>
 
     <button id="resetBtn" style="display:none;" onclick="resetContador()">RESET</button>
+    <button id="resetTotalBtn" style="display:none;" onclick="resetHistorico()">RESET HISTORICO</button>
+
 </div>
 
 <script>
@@ -123,6 +125,12 @@ async function connect(){
                 else if(response === "OPERADOR_OK"){
                     alert("Acceso Operador");
                 }
+                else if(response === "DISTRIBUIDOR_OK"){
+    document.getElementById("resetBtn").style.display = "inline-block";
+    document.getElementById("resetTotalBtn").style.display = "inline-block";
+    alert("Acceso Distribuidor");
+}
+
                 else if(response === "BLOQUEADO"){
                     alert("Sistema bloqueado 30 segundos");
                 }
@@ -159,6 +167,17 @@ async function resetContador() {
         alert("Error enviando reset: " + error);
     }
 }
+    async function resetHistorico() {
+
+    if(!confirm("Confirma borrar contador histórico?")){
+        return;
+    }
+
+    await characteristicAuth.writeValue(
+        new TextEncoder().encode("RESET_TOTAL")
+    );
+}
+
 
 </script>
 
