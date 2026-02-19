@@ -20,6 +20,11 @@ button {
     font-size: 70px;
     margin-top: 20px;
 }
+#contadorTotal {
+    font-size: 30px;
+    margin-top: 10px;
+    color: #00ff88;
+}
 #estado {
     margin-top: 10px;
     font-weight: bold;
@@ -34,7 +39,6 @@ input {
 <body>
 
 <h2>CONTADOR - FRUTEXSA</h2>
-<h3 id="machine"></h3>
 
 <input type="password" id="password" placeholder="Ingrese contraseña">
 <br>
@@ -43,10 +47,11 @@ input {
 <div id="panel" style="display:none;">
     <button onclick="connect()">Conectar</button>
     <div id="estado">Desconectado</div>
-    <div id="contador">0</div>
-    <button id="resetBtn" style="display:none;" onclick="resetContador()">RESET</button>
-    
 
+    <div id="contador">0</div>
+    <div>Total Histórico: <span id="contadorTotal">0</span></div>
+
+    <button id="resetBtn" style="display:none;" onclick="resetContador()">RESET</button>
 </div>
 
 <script>
@@ -90,8 +95,15 @@ async function connect(){
         characteristicCounter.addEventListener(
             'characteristicvaluechanged',
             event => {
+
                 const value = new TextDecoder().decode(event.target.value);
-                document.getElementById("contador").innerText = value;
+                const partes = value.split(",");
+
+                document.getElementById("contador").innerText = partes[0];
+
+                if(partes.length > 1){
+                    document.getElementById("contadorTotal").innerText = partes[1];
+                }
             }
         );
 
@@ -101,6 +113,7 @@ async function connect(){
         characteristicAuth.addEventListener(
             'characteristicvaluechanged',
             event => {
+
                 const response = new TextDecoder().decode(event.target.value);
 
                 if(response === "SUPERVISOR_OK"){
@@ -109,6 +122,9 @@ async function connect(){
                 }
                 else if(response === "OPERADOR_OK"){
                     alert("Acceso Operador");
+                }
+                else if(response === "BLOQUEADO"){
+                    alert("Sistema bloqueado 30 segundos");
                 }
                 else{
                     alert("Acceso Denegado");
@@ -130,7 +146,10 @@ async function connect(){
 // -------- RESET --------
 async function resetContador() {
 
-    console.log("Enviando RESET");
+    if(!characteristicAuth){
+        alert("No conectado");
+        return;
+    }
 
     try {
         await characteristicAuth.writeValue(
@@ -140,7 +159,6 @@ async function resetContador() {
         alert("Error enviando reset: " + error);
     }
 }
-
 
 </script>
 
